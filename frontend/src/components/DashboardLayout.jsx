@@ -1,93 +1,49 @@
 
-import { useState } from "react";
+import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
-import { hasPermission } from "../services/permissions";
-
-import UserManagement from "../pages/UserManagement";
-import RoleManagement from "../pages/RoleManagement";
-import EmployeeManagement from "../pages/EmployeeManagement";
-import Reports from "../pages/Reports";
-import Settings from "../pages/Settings";
-import UserProfile from "../pages/UserProfile";
 
 function DashboardLayout({ user, onLogout }) {
-  const [activePage, setActivePage] = useState("Dashboard");
+  const location = useLocation();
 
-  const renderPage = () => {
-    // User Profile is personal information.
-    if (activePage === "User Profile") {
-      return <UserProfile user={user} />;
+  const getPageTitle = (pathname) => {
+    switch (pathname) {
+      case "/dashboard":
+        return "Dashboard";
+      case "/users":
+        return "User Management";
+      case "/roles":
+        return "Role Management";
+      case "/permissions":
+        return "Permission Management";
+      case "/employees":
+        return "Employee Management";
+      case "/reports":
+        return "Reports Management";
+      case "/settings":
+        return "System Settings";
+      case "/profile":
+        return "User Profile";
+      default:
+        return "RBAC System";
     }
-
-    // Check View permission before opening protected modules.
-    if (!hasPermission(user, activePage, "View")) {
-      return (
-        <div className="content-card">
-          <h2>Access Denied</h2>
-          <p>You do not have permission to view this module.</p>
-        </div>
-      );
-    }
-
-    // Dashboard
-    if (activePage === "Dashboard") {
-      return (
-        <div className="content-card">
-          <h2>Dashboard</h2>
-          <p>Welcome, {user.username}!</p>
-          <p>Your role: {user.role}</p>
-        </div>
-      );
-    }
-
-    // User Management
-    if (activePage === "User Management") {
-      return <UserManagement user={user} />;
-    }
-
-    // Role Management
-    if (activePage === "Role Management") {
-      return <RoleManagement />;
-    }
-
-    // Employee Management
-    if (activePage === "Employee Management") {
-      return <EmployeeManagement user={user} />;
-    }
-
-    // Reports
-    if (activePage === "Reports") {
-      return <Reports user={user} />;
-    }
-
-    // Settings
-    if (activePage === "Settings") {
-      return <Settings />;
-    }
-
-    return (
-      <div className="content-card">
-        <h2>Access Denied</h2>
-        <p>Module not found or permission not granted.</p>
-      </div>
-    );
   };
 
   return (
     <div className="app-layout">
-      <Sidebar
-        user={user}
-        activePage={activePage}
-        setActivePage={setActivePage}
-      />
+      <Sidebar user={user} />
 
       <main className="main-content">
         <header className="topbar">
-          <h2>{activePage}</h2>
-          <button onClick={onLogout}>Logout</button>
+          <h2>{getPageTitle(location.pathname)}</h2>
+          <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+            <span style={{ fontSize: "14px", color: "#666" }}>
+              Logged in: <strong>{user.username}</strong> ({user.role || "No Role"})
+            </span>
+            <button onClick={onLogout}>Logout</button>
+          </div>
         </header>
 
-        {renderPage()}
+        <Outlet />
       </main>
     </div>
   );

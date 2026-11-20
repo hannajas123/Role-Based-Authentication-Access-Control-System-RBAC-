@@ -17,19 +17,13 @@ function RoleManagement() {
       setLoading(true);
       setError("");
 
-      const response = await api.get("roles/roles/");
-      const data = response.data;
+      const [roleRes, permRes] = await Promise.all([
+        api.get("roles/roles/"),
+        api.get("roles/permissions/"),
+      ]);
 
-      setRoles(data);
-
-      // The Administrator role contains the full permission catalogue.
-      const adminRole = data.find(
-        (role) => role.name === "Administrator"
-      );
-
-      if (adminRole) {
-        setPermissions(adminRole.permissions || []);
-      }
+      setRoles(roleRes.data);
+      setPermissions(permRes.data);
     } catch (err) {
       setError(
         JSON.stringify(err.response?.data || "Unable to load roles.")

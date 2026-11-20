@@ -1,15 +1,16 @@
 
+import { NavLink } from "react-router-dom";
 import { canAccessModule } from "../services/permissions";
 
-
-function Sidebar({ user, activePage, setActivePage }) {
+function Sidebar({ user }) {
   const menuItems = [
-    { name: "Dashboard", module: "Dashboard" },
-    { name: "User Management", module: "User Management" },
-    { name: "Role Management", module: "Role Management" },
-    { name: "Employee Management", module: "Employee Management" },
-    { name: "Reports", module: "Reports" },
-    { name: "Settings", module: "Settings" },
+    { name: "Dashboard", path: "/dashboard", module: "Dashboard" },
+    { name: "User Management", path: "/users", module: "User Management" },
+    { name: "Role Management", path: "/roles", module: "Role Management" },
+    { name: "Permission Management", path: "/permissions", module: "Role Management" },
+    { name: "Employee Management", path: "/employees", module: "Employee Management" },
+    { name: "Reports", path: "/reports", module: "Reports" },
+    { name: "Settings", path: "/settings", module: "Settings" },
   ];
 
   return (
@@ -18,7 +19,7 @@ function Sidebar({ user, activePage, setActivePage }) {
 
       <div className="user-info">
         <strong>{user.username}</strong>
-        <p>{user.role}</p>
+        <p>{user.role || "No role assigned"}</p>
       </div>
 
       <nav>
@@ -26,24 +27,26 @@ function Sidebar({ user, activePage, setActivePage }) {
           if (!canAccessModule(user, item.module)) return null;
 
           return (
-            <button
-              key={item.name}
-              className={
-                activePage === item.name ? "active-menu" : ""
+            <NavLink
+              key={item.path}
+              to={item.path}
+              className={({ isActive }) =>
+                isActive ? "nav-link active-menu" : "nav-link"
               }
-              onClick={() => setActivePage(item.name)}
             >
               {item.name}
-            </button>
+            </NavLink>
           );
         })}
 
-        <button
-          className={activePage === "User Profile" ? "active-menu" : ""}
-          onClick={() => setActivePage("User Profile")}
+        <NavLink
+          to="/profile"
+          className={({ isActive }) =>
+            isActive ? "nav-link active-menu" : "nav-link"
+          }
         >
           User Profile
-        </button>
+        </NavLink>
       </nav>
     </aside>
   );

@@ -35,12 +35,18 @@ class EmployeePermissionTestView(APIView):
 
 
 
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
 
-from .models import Role
-from .serializers import RoleSerializer
+from .models import Role, Permission
+from .serializers import RoleSerializer, PermissionSerializer
+
+
+class PermissionListView(ListAPIView):
+    serializer_class = PermissionSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = Permission.objects.all().order_by("module", "action")
 
 
 class RoleListCreateView(ListCreateAPIView):

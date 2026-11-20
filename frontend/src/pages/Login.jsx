@@ -30,6 +30,11 @@ function Login({ onLogin }) {
         response.data.refresh
       );
 
+      localStorage.setItem(
+        "user",
+        JSON.stringify(response.data.user)
+      );
+
       onLogin(response.data.user);
 
     } catch (err) {
